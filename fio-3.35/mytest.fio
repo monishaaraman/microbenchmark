@@ -1,0 +1,8 @@
+[global]
+ioengine=libaio
+rw=randrw
+
+
+[mytest]
+size=512m
+directory=/tmp
