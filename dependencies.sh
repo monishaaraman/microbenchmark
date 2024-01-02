@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Update package list
+sudo apt-get update
+
 # Install dependencies if not already installed
 DEPS=("cmake" "libbenchmark-dev" "python3" "git" "libaio-dev" "autoconf" "libpqxx-dev")
 
