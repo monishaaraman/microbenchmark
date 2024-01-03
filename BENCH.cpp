@@ -306,19 +306,15 @@ void processNetworkOutput(const std::string &inputFile, const std::string &bench
     outFile.close();
 }*/
 
-int main() {
-    int choice;
+int main(int argc, char* argv[]) {
+    if (argc != 2) {
+        std::cerr << "Usage: " << argv[0] << " <option>\n";
+        return 1;
+    }
 
-    std::cout << "Choose a test case:\n";
-    std::cout << "1. Disk\n";
-    std::cout << "2. Memory\n";
-    std::cout << "3. Network\n";
-    std::cout << "4. Do you want to test ALL?\n";
-    std::cout << "Enter choice (1/2/3/4): ";
-    std::cin >> choice;
+    std::string option = argv[1];
 
-    switch (choice) {
-        case 1:
+        if (option == "disk") {
             system("./fio-sync-test.sh | tee fio-sync-test_output.txt > /dev/null 2>&1");    
             system("./test1.sh | tee test1_output.txt > /dev/null 2>&1");
             
@@ -330,9 +326,7 @@ int main() {
             std::cout << "2. FIO\n";
             processDiskOutput("test1_output.txt", "fio/iterations:10");
 
-            break;
-
-        case 2:
+         } else if (option == "memory") {
             system("./ramsmp.sh | tee ramsmp_output.txt > /dev/null 2>&1");
             system("./cachebench.sh | tee cache_output.txt > /dev/null 2>&1");
 
@@ -348,9 +342,9 @@ int main() {
             processMemoryOutput("cache_output.txt", "BM_CacheBench/iterations:3");
             
            
-            break;
+         }
 
-        case 3:
+        else if (option == "network") {
 
             system("./ethr-test.sh | tee ethrr_output.txt > /dev/null 2>&1");
             system("./sock-test.sh | tee sockk_output.txt > /dev/null 2>&1");
@@ -368,9 +362,9 @@ int main() {
             processNetworkOutput("iperff_output.txt", "iperf/iterations:3");
             
 
-            break;
+            
         
-        case 4:
+        /*case 4:
             system("./fio-sync-test.sh | tee fio_output.txt");
             system("./test1.sh | tee test1_output.txt");
             //saveBenchmarkResults("fio_output.txt", "disk_results.txt", false); // Overwrite mode for the first file
@@ -383,9 +377,10 @@ int main() {
 
             break;
             
+            
         default:
             std::cout << "Invalid choice!\n";
-            break;
+            break;*/
     }
 
 
