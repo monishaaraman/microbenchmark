@@ -325,6 +325,7 @@ int main(int argc, char* argv[]) {
             std::cout << "\n";
             std::cout << "2. FIO\n";
             processDiskOutput("test1_output.txt", "fio/iterations:10");
+            std::cout << "######## END ########\n";
 
          } else if (option == "memory") {
             system("./ramsmp.sh | tee ramsmp_output.txt > /dev/null 2>&1");
