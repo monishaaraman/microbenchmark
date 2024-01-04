@@ -59,14 +59,45 @@ void processDiskOutput(const std::string &inputFile, const std::string &benchmar
                 tokens.push_back(word);
             }
 
-            if (tokens.size() >= 8) {
-                std::cout << "Benchmark                           : " << getFirstToken(tokens[0], '/') << std::endl;
-                std::cout << "Time                                : " << tokens[1] << " " << tokens[2] << std::endl;
-                std::cout << "CPU                                 : " << tokens[3] << " " << tokens[4] << std::endl;
-                std::cout << "Iterations                          : " << tokens[5] << std::endl;
-                std::cout << "Average Read (in MiB/s)             : " << tokens[6] << std::endl;
-                std::cout << "Average Write (in MiB/s)            : " << tokens[7] << std::endl;
-            }
+             if (tokens.size() >= 8) {
+                    // Convert kB/s to MiB/s
+                    // Extract the numeric part and convert it to float
+                    size_t kPos6 = tokens[6].find("k");
+                    if (kPos6 != std::string::npos) {
+                        std::string numericPart = tokens[6].substr(0, kPos6);
+                        float token6numericValue = std::stof(numericPart);
+
+                        // Multiply by 1000
+                        token6numericValue *= 1000;
+                        tokens[6] = std::to_string((int)token6numericValue);
+                        // Print the result
+                        std::cout << "Converted value: " << token6numericValue << std::endl;
+                    } else {
+                        std::cerr << "Invalid format: no 'k' found in the string." << std::endl;
+                    }
+
+                    size_t kPos7 = tokens[7].find("k");
+                    if (kPos7 != std::string::npos) {
+                        std::string numericPart = tokens[7].substr(0, kPos7);
+                        float token7numericValue = std::stof(numericPart);
+
+                        // Multiply by 1000
+                        token7numericValue *= 1000;
+                        tokens[7] = std::to_string((int)token7numericValue);
+                        // Print the result
+                        std::cout << "Converted value: " << token7numericValue << std::endl;
+                    } else {
+                        std::cerr << "Invalid format: no 'k' found in the string." << std::endl;
+                    }
+                    
+                   //  << tokens[2]  and  << tokens[2]  -- gives ms
+                    std::cout << "Benchmark                                  : " << getFirstToken(tokens[0], '/') << std::endl;
+                    std::cout << "Time  (ms)                                    : " << tokens[1] << std::endl;
+                    std::cout << "CPU   (ms)                                     : " << tokens[3] << std::endl;
+                    std::cout << "Iterations                                      : " << tokens[5] << std::endl;
+                    std::cout << "Average Read (in MiB/s)             : " << tokens[6] << std::endl;
+                    std::cout << "Average Write (in MiB/s)            : " << tokens[7] << std::endl;
+                }
                 tokens.clear(); // Clear tokens before reading the next line
 
         }
