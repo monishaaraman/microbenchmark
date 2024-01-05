@@ -34,7 +34,6 @@ std::string getFirstToken(const std::string &s, char delimiter) {
     return "";
 }
 
-
 //Process Disk console Data 
 
 void processDiskOutput(const std::string &inputFile, const std::string &benchmarkName) {
