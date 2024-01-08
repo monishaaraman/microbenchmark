@@ -70,9 +70,9 @@ void processDiskOutput(const std::string &inputFile, const std::string &benchmar
                         token6numericValue *= 1000;
                         tokens[6] = std::to_string((int)token6numericValue);
                         // Print the result
-                        std::cout << "Converted value: " << token6numericValue << std::endl;
+                        //std::cout << "Converted value: " << token6numericValue << std::endl;
                     } else {
-                        std::cerr << "Invalid format: no 'k' found in the string." << std::endl;
+                        //std::cerr << "Invalid format: no 'k' found in the string." << std::endl;
                     }
 
                     size_t kPos7 = tokens[7].find("k");
@@ -84,9 +84,9 @@ void processDiskOutput(const std::string &inputFile, const std::string &benchmar
                         token7numericValue *= 1000;
                         tokens[7] = std::to_string((int)token7numericValue);
                         // Print the result
-                        std::cout << "Converted value: " << token7numericValue << std::endl;
+                        //std::cout << "Converted value: " << token7numericValue << std::endl;
                     } else {
-                        std::cerr << "Invalid format: no 'k' found in the string." << std::endl;
+                        //std::cerr << "Invalid format: no 'k' found in the string." << std::endl;
                     }
                     
                    //  << tokens[2]  and  << tokens[2]  -- gives ms
