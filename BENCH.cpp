@@ -351,10 +351,10 @@ int main(int argc, char* argv[]) {
             std::cout << "\n\n";
             std::cout << "######## BENCHMARK RESULTS ########\n";
             std::cout << "1. Fio-Random_read_&_write \n";
-            processDiskOutput("fio-sync-test_output.txt", "Fio-Random_read_&_write/iterations:10");
+            processDiskOutput("fio-sync-test_output.txt", "Fio-Random/iterations:10");
             std::cout << "\n";
             std::cout << "2. Fio-sequential_read_&_write\n";
-            processDiskOutput("test1_output.txt", "Fio-sequential_read_&_write/iterations:10");
+            processDiskOutput("test1_output.txt", "Fio-sequential/iterations:10");
             std::cout << "######## END ########\n";
 
          } else if (option == "memory") {
