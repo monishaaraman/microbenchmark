@@ -116,7 +116,7 @@ static void BM_WrapFio(benchmark::State& state) {
 }
 
 //BENCHMARK(BM_WrapFio)->Iterations(1);
-BENCHMARK(Fio-Random_read_&_write)->Iterations(10)->Unit(benchmark::kMillisecond);;
+BENCHMARK(BM_WrapFio)->Name("Fio-Random_read_&_write")->Iterations(10)->Unit(benchmark::kMillisecond);;
 
 
 BENCHMARK_MAIN();
