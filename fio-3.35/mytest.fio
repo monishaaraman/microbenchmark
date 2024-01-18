@@ -1,6 +1,6 @@
 [global]
 ioengine=libaio
-rw=randrw
+rw=readwrite
 
 
 [mytest]
