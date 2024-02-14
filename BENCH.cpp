@@ -38,6 +38,70 @@ std::string getFirstToken(const std::string &s, char delimiter) {
 
 void processDiskOutput(const std::string &inputFile, const std::string &benchmarkName) {
     try {
+        std::string modelName = getSystemModelName();
+        std::cout << "System Model Name: " << modelName << std::endl;
+        std::ifstream inFile(inputFile);
+        std::string line;
+
+        int Average_Read = -1, Average_Write = -1, Compile_avg = -1;
+
+        // Regular expression to split by one or more spaces
+        std::regex regex("\\s+");
+        
+        while (getline(inFile, line)) {
+            if (line.find(benchmarkName) != std::string::npos) {
+                //std::cout << "Processing line: " << line << std::endl;
+                std::istringstream iss(line);
+                std::string word;
+                std::vector<std::string> tokens;
+
+                // Process each word in the line
+                while (iss >> word) {
+                    tokens.push_back(word);
+                }
+
+                if (!tokens.empty()) {
+                    std::cout << "Benchmark                           : " << getFirstToken(tokens[0], '/') << std::endl;
+                    std::cout << "Time_ms                              : " << tokens[1] << " " << tokens[2] << std::endl;
+                    std::cout << "CPU_ms                               : " << tokens[3] << " " << tokens[4] << std::endl;
+                    std::cout << "Iterations                           : " << tokens[5] << std::endl;
+
+                    // Extract the numeric part and convert it to float
+                    size_t kPos6 = tokens[6].find("k");
+                    if (kPos6 != std::string::npos) {
+                        std::string numericPart = tokens[6].substr(0, kPos6);
+                        float token6numericValue = std::stof(numericPart);
+
+                        // Multiply by 1000
+                        token6numericValue *= 1000;
+                        tokens[6] = std::to_string((int)token6numericValue);
+                        // Print the result
+                        // std::cout << "Converted value: " << token6numericValue << std::endl;
+
+                    
+                    if (benchmarkName.find("Fio-Random") != std::string::npos) {
+                        Average_Read = std::stof(tokens[6]);
+                        std::cout << "Average Read  (in MiB/s)   : " << Average_Read << std::endl;
+                    } else if (benchmarkName.find("Fio-sequential") != std::string::npos) {
+                        Average_Write = std::stof(tokens[6]);
+                        std::cout << "Average Write  (in MiB/s)     : " << Average_Write << std::endl;
+                    } else if (benchmarkName.find("BM_Compilebench") != std::string::npos) {
+                        Compile_avg = std::stof(tokens[6]);
+                        std::cout << "Average Compile (in MB/s)            : " << Compile_avg << std::endl;
+                    }
+                }
+            }
+        }
+        }
+        inFile.close();
+    } catch (const std::exception &e) {
+        std::cerr << e.what() << std::endl;
+    }
+}
+
+
+/*void processDiskOutput(const std::string &inputFile, const std::string &benchmarkName) {
+    try {
          std::string modelName = getSystemModelName();
     
     std::cout << "System Model Name: " << modelName << std::endl;
@@ -107,7 +171,7 @@ void processDiskOutput(const std::string &inputFile, const std::string &benchmar
 
     
 
-       /* std::cout << "Preparing to insert into database..." << std::endl;
+        std::cout << "Preparing to insert into database..." << std::endl;
         // Establish a connection to the PostgreSQL "Disk" database
         pqxx::connection conn("dbname=benchmark_db user=postgres password=1234 hostaddr=10.16.39.156 port=5432");
 
@@ -127,11 +191,11 @@ void processDiskOutput(const std::string &inputFile, const std::string &benchmar
             conn.disconnect();
         } else {
             std::cerr << "Failed to open database." << std::endl;
-        }*/
+        }
     } catch (const std::exception &e) {
         std::cerr << e.what() << std::endl;
     }
-}
+}*/
 
 //Memory
 
@@ -294,8 +358,114 @@ void processNetworkOutput(const std::string &inputFile, const std::string &bench
     }
 }
 
+void processCpuOutput(const std::string &inputFile, const std::string &benchmarkName) {
+    try {
+        std::string modelName = getSystemModelName();
+        std::cout << "System Model Name: " << modelName << std::endl;
+        std::ifstream inFile(inputFile);
+        std::string line;
 
+        int AverageRenderingtime = -1, AveragePerByte = -1, AverageEventsPerSecond = -1;
+
+        // Regular expression to split by one or more spaces
+        std::regex regex("\\s+");
         
+        while (getline(inFile, line)) {
+            if (line.find(benchmarkName) != std::string::npos) {
+                //std::cout << "Processing line: " << line << std::endl;
+                std::istringstream iss(line);
+                std::string word;
+                std::vector<std::string> tokens;
+
+                // Process each word in the line
+                while (iss >> word) {
+                    tokens.push_back(word);
+                }
+
+                if (!tokens.empty()) {
+                    std::cout << "Benchmark                           : " << getFirstToken(tokens[0], '/') << std::endl;
+                    std::cout << "Time_ms                              : " << tokens[1] << " " << tokens[2] << std::endl;
+                    std::cout << "CPU_ms                               : " << tokens[3] << " " << tokens[4] << std::endl;
+                    std::cout << "Iterations                           : " << tokens[5] << std::endl;
+                    
+                    if (benchmarkName.find("BM_CRayBenchmark") != std::string::npos)
+                     {
+                        
+                        AverageRenderingtime = std::stof(tokens[6]);
+                        std::cout << "Average Rendering time (seconds)   : " << AverageRenderingtime << std::endl;
+                    } else if (benchmarkName.find("BM_Blake2_Benchmark") != std::string::npos) {
+                        AveragePerByte  = std::stof(tokens[6]);  // Adjust the index
+                        std::cout << "Average Per Byte (Cycles Per Byte)     : " << AveragePerByte  << std::endl;
+                    } else if (benchmarkName.find("BM_SysbenchCPUBenchmark") != std::string::npos) {
+                        AverageEventsPerSecond = std::stof(tokens[6]);  // Adjust the index
+                        std::cout << "Average Events/s (seconds)            : " << AverageEventsPerSecond << std::endl;
+                    }
+                }
+            }
+        }
+
+        inFile.close();
+    } catch (const std::exception &e) {
+        std::cerr << e.what() << std::endl;
+    }
+}
+
+void processGpuOutput(const std::string &inputFile, const std::string &benchmarkName) {
+    try {
+        std::string modelName = getSystemModelName();
+        std::cout << "System Model Name: " << modelName << std::endl;
+        std::ifstream inFile(inputFile);
+        std::string line;
+
+        int AvgFPS = -1, AverageFurMarkScore = -1, AverageTessMarkScore = -1;
+
+        // Regular expression to split by one or more spaces
+        std::regex regex("\\s+");
+        
+        while (getline(inFile, line)) {
+            if (line.find(benchmarkName) != std::string::npos) {
+                //std::cout << "Processing line: " << line << std::endl;
+                std::istringstream iss(line);
+                std::string word;
+                std::vector<std::string> tokens;
+
+                // Process each word in the line
+                while (iss >> word) {
+                    tokens.push_back(word);
+                }
+
+                if (!tokens.empty()) {
+                    std::cout << "Benchmark                           : " << getFirstToken(tokens[0], '/') << std::endl;
+                    std::cout << "Time_ms                              : " << tokens[1] << " " << tokens[2] << std::endl;
+                    std::cout << "CPU_ms                               : " << tokens[3] << " " << tokens[4] << std::endl;
+                    std::cout << "Iterations                           : " << tokens[5] << std::endl;
+                    
+                    if (benchmarkName.find("BM_UnigineHeavenBenchmark") != std::string::npos)
+                     {
+                        
+                        float AvgFPS = std::stof(tokens[6]);
+                        std::cout << "Average FPS (Frames Per Second)   : " << AvgFPS << std::endl;
+                    } else if (benchmarkName.find("BM_FurMarkBenchmark") != std::string::npos) {
+                        float AverageFurMarkScore  = std::stof(tokens[6]);  // Adjust the index
+                        std::cout << "Average Furmark Score (Points)     : " << AverageFurMarkScore  << std::endl;
+                    } else if (benchmarkName.find("BM_TessMarkBenchmark") != std::string::npos) {
+                        float AverageTessMarkScore = std::stof(tokens[6]);  // Adjust the index
+                        std::cout << "Average Tessmark Score (Points)            : " << AverageTessMarkScore << std::endl;
+                    } 
+                }
+            }
+        }
+
+        inFile.close();
+    } catch (const std::exception &e) {
+        std::cerr << e.what() << std::endl;
+    }
+}
+
+
+
+
+
 
 
 
@@ -347,15 +517,20 @@ int main(int argc, char* argv[]) {
         if (option == "disk") {
             system("./fio-sync-test.sh | tee fio-sync-test_output.txt > /dev/null 2>&1");    
             system("./test1.sh | tee test1_output.txt > /dev/null 2>&1");
+            system("./compile_bench.sh | tee compilebench_output.txt > /dev/null 2>&1");
             
             std::cout << "\n\n";
             std::cout << "######## BENCHMARK RESULTS ########\n";
             std::cout << "1. Fio-Random_read_&_write \n";
-            processDiskOutput("fio-sync-test_output.txt", "Fio-Random/iterations:10");
+            processDiskOutput("test1_output.txt", "Fio-Random/iterations:10");
             std::cout << "\n";
             std::cout << "2. Fio-sequential_read_&_write\n";
-            processDiskOutput("test1_output.txt", "Fio-sequential/iterations:10");
+            processDiskOutput("fio-sync-test_output.txt", "Fio-sequential/iterations:10");
+            std::cout << "\n";
+            std::cout << "3. Compile_bench\n";
+            processDiskOutput("compilebench_output.txt", "BM_Compilebench/iterations:3");
             std::cout << "######## END ########\n";
+
 
          } else if (option == "memory") {
             system("./ramsmp.sh | tee ramsmp_output.txt > /dev/null 2>&1");
@@ -391,27 +566,51 @@ int main(int argc, char* argv[]) {
             std::cout << "\n";
             std::cout << "3. IPERF\n";
             processNetworkOutput("iperff_output.txt", "iperf/iterations:3");
+        }
+
+        else if (option == "cpu") {
+
+            system("./c-ray_bench.sh | tee c-ray_output.txt > /dev/null 2>&1");
+            system("./blake2-bench.sh | tee blake2_output.txt > /dev/null 2>&1");
+            system("./sysbench.sh | tee sysbench_output.txt > /dev/null 2>&1");
+
+            std::cout << "\n\n";
+            std::cout << "######## BENCHMARK RESULTS ########\n";
+            std::cout << "1. C-RAY\n";
+            processCpuOutput("c-ray_output.txt", "BM_UnigineHeavenBenchmark/iterations:3");
+            std::cout << "\n";
+            std::cout << "2. BLAKE\n";
+            processCpuOutput("blake2_output.txt", "BM_Blake2_Benchmark/iterations:5");
+            std::cout << "\n";
+            std::cout << "3. SYSBENCH\n";
+            processCpuOutput("sysbench_output.txt", "BM_SysbenchCPUBenchmark/iterations:3");
             
 
             
         
-        /*case 4:
-            system("./fio-sync-test.sh | tee fio_output.txt");
-            system("./test1.sh | tee test1_output.txt");
-            //saveBenchmarkResults("fio_output.txt", "disk_results.txt", false); // Overwrite mode for the first file
-            //saveBenchmarkResults("test1_output.txt", "disk_results.txt", true); // Append mode for the second file
+        
+    }
 
-            system("./ramsmp.sh | tee ramsmp_output.txt");
-            system("./cachebench.sh | tee cachebench_output.txt");
-            //saveBenchmarkResults("ramsmp_output.txt", "memory_results.txt", false); // Overwrite mode for the first file
-            //saveBenchmarkResults("cachebench_output.txt", "memory_results.txt", true); // Append mode for the second file
+    else if (option == "gpu") {
 
-            break;
+            system("./unigine_bench.sh | tee unigine_output.txt > /dev/null 2>&1");
+            system("./gputest_bench.sh | tee gputest_output.txt > /dev/null 2>&1");
+
+            std::cout << "\n\n";
+            std::cout << "######## BENCHMARK RESULTS ########\n";
+            std::cout << "1. UNIGINE-HEAVEN\n";
+            processGpuOutput("unigine_output.txt", "BM_UnigineHeavenBenchmark/iterations:3");
+            std::cout << "\n";
+            std::cout << "2. GPUTEST-FURMARK\n";
+            processGpuOutput("gputest_output.txt", "BM_FurMarkBenchmark/iterations:3");
+            std::cout << "\n";
+            std::cout << "3. GPUTEST-TESSMARK\n";
+            processGpuOutput("gputest_output.txt", "BM_TessMarkBenchmark/iterations:3");
             
+
             
-        default:
-            std::cout << "Invalid choice!\n";
-            break;*/
+        
+        
     }
 
 
